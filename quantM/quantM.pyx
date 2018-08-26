@@ -383,16 +383,15 @@ cpdef clogrebalancing(returns, wt, double bfee=0.0, double sfee=0.0):
                 else:
                     pass
 
-    cdef np.ndarray wr # 수수료가 적용된 수익률과 투자비중을 곱한 최종 결과    
+    cdef np.ndarray wr # 수수료가 적용된 수익률과 투자비중을 곱한 최종 결과
+    for i in np.arange(len(wv)):
+        wv[i] = wv[i] / wv[i].sum()
+    
+    
     wr = (np.exp(retv)-1) * wv
     wreturns = df(wr, index=weights.index, columns=weights.columns)
-    
-    ww = wv.copy()
-    
-    for i in np.arange(len(ww)):
-        ww[i] = wv[i] / wv[i].sum()
-    
-    w = df(ww, index=wreturns.index, columns=wreturns.columns)
+     
+    w = df(wv, index=wreturns.index, columns=wreturns.columns)
     
     # 포트폴리오 수익률 시계열
     port = wreturns.sum(1)

@@ -78,7 +78,7 @@ cpdef np.ndarray rAreaGenerator(np.ndarray data, int smax = 2):
     """
         State 데이터의 일부 성분의 값을 임의로 0으로 만들어 데이터에 변화도 주고,
         입력 데이터 개수도 늘리는 목적의 함수(면적 기준)
-        data: State를 표현하는 np.ndarray(len(Time Series), n, n, 3)
+        data: State를 표현하는 np.ndarray(len(Time Series), n, n, m)
         smax: 0의 값을 넣을 범위의 최대 길이(기본값: 2)
         return: rdata // state 데이터에 변화를 준 데이터
     """
@@ -113,7 +113,7 @@ cpdef np.ndarray rPointGenerator(np.ndarray data, int pmax = 10):
     """
         State 데이터의 일부 성분의 값을 임의로 0으로 만들어 데이터에 변화도 주고,
         입력 데이터 개수도 늘리는 목적의 함수(점 기준)
-        data: State를 표현하는 np.ndarray(len(Time Series, n, n, 3)
+        data: State를 표현하는 np.ndarray(len(Time Series, n, n, m)
         pmax: 0의 값을 넣을 성분의 최대 개수(기본값: 10)
         return: rdata // state 데이터에 변화를 준 데이터
     """
@@ -145,3 +145,23 @@ cpdef np.ndarray rPointGenerator(np.ndarray data, int pmax = 10):
                     rdata[i, yp[k], xp[k], j] = 0.
             
     return rdata
+
+# 시계열 임의 시점 및 길이 도출 함수
+cpdef np.ndarray tseriesGen(np.ndarray tseries, int min_period=250):
+    """
+        Time Series 데이터를 받고, 시계열 최소 길이를 받아서
+        임의의 시점에 최소 길이 이상의 플레이 시계열 도출해서 반환
+        tseries: 시계열을 담고 있는 numpy.ndarray 데이터
+        min_period: 최소 시계열 길이
+        return => 임의 시계열 인덱스
+    """
+    cdef np.ndarray tdata
+    cdef int n = len(tseries)
+
+    assert(n >= min_period)
+    
+    # t: 시작 시점
+    cdef int t = np.random.randint(0, n - min_period + 1)
+    cdef int p = np.random.randint(min_period, n - t + 1)
+
+    return np.arange(t, t + p)
