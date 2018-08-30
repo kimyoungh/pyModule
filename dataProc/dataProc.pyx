@@ -165,3 +165,22 @@ cpdef np.ndarray tseriesGen(np.ndarray tseries, int min_period=250):
     cdef int p = np.random.randint(min_period, n - t + 1)
 
     return np.arange(t, t + p)
+
+# 종가기준 수익률, 매도 수익률, 매수 수익률 계산
+def returnsCal(popen, price):
+    """
+        장시작때 시가에 매매를 가정한 수익률을 계산해서 도출
+        popen: 시가 시계열 데이터프레임
+        price: 종가 시계열 데이터프레임
+        반환값(로그수익률)=>
+        returns: 종가기준 수익률
+        sreturns: 매도 수익률
+        breturns: 매수 수익률 반환
+    """
+    assert(len(popen) == len(price))
+
+    returns = np.log(price / price.shift(1))
+    sreturns = np.log(popen / price.shift(1))
+    breturns = np.log(price / popen)
+
+    return returns, sreturns, breturns
